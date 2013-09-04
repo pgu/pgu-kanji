@@ -1,6 +1,4 @@
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -21,19 +19,55 @@ public class Run {
         Document dom = db.parse("pgu-kanji/src/kanjidic2.xml");
 
         Element doc = dom.getDocumentElement();
-        NodeList nodeList = doc.getElementsByTagName("literal");
+        NodeList charactersNL = doc.getElementsByTagName("character");
 
-        System.out.println("Nodes: " + nodeList.getLength());
+        int nbCharacters = charactersNL.getLength();
+
+        System.out.println("nbCharacters: " + nbCharacters);
 
         StringBuilder sb = new StringBuilder();
 
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            sb.append(nodeList.item(i).getTextContent());
-            sb.append(".");
+        for (int i = 0; i < nbCharacters; i++) {
 
-            if ((i + 1) % 9 == 0) {
-                sb.append("\n");
+            Element character = (Element) charactersNL.item(i);
+
+            NodeList literalNL = character.getElementsByTagName("literal");
+            String kanji = literalNL.item(0).getTextContent();
+
+            if ("亜".equals(kanji)) {
+
+                NodeList readingNL = character.getElementsByTagName("reading");
+                NodeList meaningNL = character.getElementsByTagName("meaning");
+
+                System.out.println(kanji);
+                System.out.println("### reading");
+                for (int j = 0; j < readingNL.getLength(); j++) {
+                    Node reading = readingNL.item(j);
+
+                    NamedNodeMap atts = reading.getAttributes();
+                    String r_type = atts.getNamedItem("r_type").getTextContent();
+
+                    if ("ja_on".equals(r_type)) {
+                        System.out.println("on: " + reading.getTextContent());
+
+                    } else if ("ja_kun".equals(r_type)) {
+                        System.out.println("kun: " + reading.getTextContent());
+                    }
+
+                }
+
+                System.out.println("### meaning");
+                for (int j = 0; j < meaningNL.getLength(); j++) {
+                    Node item = meaningNL.item(j);
+                    if (!item.hasAttributes()) {
+                        System.out.println(item.getTextContent());
+                    }
+                }
+
+                break;
             }
+
+            System.out.print(".");
         }
 
         PrintWriter writer = new PrintWriter("pgu-kanji/src/result.txt", "UTF-8");
@@ -42,6 +76,13 @@ public class Run {
 
         System.out.println("Done!");
     }
+
+    //            sb.append(character.getTextContent());
+//            sb.append(".");
+//
+//            if ((i + 1) % 9 == 0) {
+//                sb.append("\n");
+//            }
 
 
 //    NodeList listOfPersons = doc.getElementsByTagName("person");
