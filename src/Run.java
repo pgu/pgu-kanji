@@ -11,7 +11,6 @@ import java.io.PrintWriter;
 public class Run {
 
     public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException {
-        System.out.println("toto");
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setIgnoringComments(true);
