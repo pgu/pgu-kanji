@@ -3,7 +3,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.*;
 import java.util.HashSet;
 
-public class ParseJoyoKyoiku {
+public class ParseJouyou {
 
     public static void main(String[] args) throws IOException {
 
