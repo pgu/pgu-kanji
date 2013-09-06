@@ -9,7 +9,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 
 public class ParseKanjidic2 {
 
@@ -28,6 +30,7 @@ public class ParseKanjidic2 {
         System.out.println("nbCharacters: " + nbCharacters);
 
         StringBuilder sb = new StringBuilder();
+        HashMap<String, String> acc = new HashMap<String, String>();
 
         int counter = 0;
         for (int i = 0; i < nbCharacters; i++) {
@@ -39,15 +42,16 @@ public class ParseKanjidic2 {
             String kanji = literalNL.item(0).getTextContent();
 
             // GRADE
-            NodeList gradeNL = character.getElementsByTagName("grade");
-            if (gradeNL.getLength() == 0) {
-                continue;
-            }
-
-            int grade = Integer.parseInt(gradeNL.item(0).getTextContent(), 10);
+//            NodeList gradeNL = character.getElementsByTagName("grade");
+//            if (gradeNL.getLength() == 0) {
+//                continue;
+//            }
+//
+//            int grade = Integer.parseInt(gradeNL.item(0).getTextContent(), 10);
 
             // 2136 jouyou
-            if (grade < 9) {
+//            if (grade < 9) {
+            if (radicals.contains(kanji)) {
                 counter++;
 
                 NodeList readingNL = character.getElementsByTagName("reading");
@@ -77,16 +81,20 @@ public class ParseKanjidic2 {
                     }
                 }
 
-                sb.append("{ literal: '" + kanji + "', grade: " + grade + ", ons: [" + t(readingsON) + "], kuns: [" + t(readingsKUN) + "], meanings: [" + t(meanings) + "] }, \n");
+                acc.put(kanji, "{ literal: '" + kanji + "', ons: [" + t(readingsON) + "], kuns: [" + t(readingsKUN) + "], meanings: [" + t(meanings) + "] }, \n");
+//                sb.append("{ literal: '" + kanji + "', grade: " + grade + ", ons: [" + t(readingsON) + "], kuns: [" + t(readingsKUN) + "], meanings: [" + t(meanings) + "] }, \n");
             }
         }
 
         System.out.println(counter);
 
-//        String raw = sb.toString();
-//        String ok = raw.replace(", ]", "]");
+        for (int i = 0; i < radicals.length(); i++) {
+            sb.append(acc.get("" + radicals.charAt(i)));
+        }
+
 //
-        PrintWriter writer = new PrintWriter("pgu-kanji/src/jouyou.js.txt", "UTF-8");
+        PrintWriter writer = new PrintWriter("pgu-kanji/src/radicals.js.txt", "UTF-8");
+//        PrintWriter writer = new PrintWriter("pgu-kanji/src/jouyou.js.txt", "UTF-8");
         writer.println(sb.toString());
         writer.close();
 
